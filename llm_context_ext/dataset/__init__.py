@@ -7,9 +7,9 @@ from pyprojroot import here
 
 @dataclass
 class DataInstance:
-    conversation_id: str = uuid.uuid1().hex
     messages: List
     turns: int
+    conversation_id: str = uuid.uuid1().hex
 
     @staticmethod
     def get_keys():
