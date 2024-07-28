@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "llm-context-ext"
+version = "0.1.0"
+description = ""
+authors = ["Sachith Gunasekara <sachith@surge.global>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = "^2.8.2"
+groq = "^0.9.0"
+python-dotenv = "^1.0.1"
+pyprojroot = "^0.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

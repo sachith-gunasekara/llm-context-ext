@@ -1,0 +1,9 @@
+<task>{task}</task>
+
+<hints>
+{hints}
+</hints>
+
+<context>
+{context}
+</context>
