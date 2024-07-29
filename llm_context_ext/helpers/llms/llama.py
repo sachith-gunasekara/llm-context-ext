@@ -6,6 +6,7 @@ def generate(messages, model="llama-3.1-70b-versatile"):
     return client.chat.completions.create(
         messages=messages,
         model=model,
+        temperature=0
     ).choices[0].message.content
 
 

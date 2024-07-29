@@ -166,3 +166,6 @@ cython_debug/
 
 # VS Code
 .vscode/
+
+# Dataset
+llm_context_ext/data/

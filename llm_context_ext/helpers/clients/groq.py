@@ -1,10 +1,8 @@
+from groq import Groq
+from dotenv import load_dotenv
 import os
 
-from groq import Groq
+def create_groq_client(groq_api_key: str):
+    return Groq(api_key=groq_api_key)
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-
-def create_groq_client():
-    return Groq(api_key=GROQ_API_KEY)
-
-client = create_groq_client()
+client = create_groq_client(os.environ["GROQ_API_KEY"])
