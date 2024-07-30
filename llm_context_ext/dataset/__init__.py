@@ -12,6 +12,7 @@ from llm_context_ext.helpers.config import config
 class DataInstance:
     messages: List
     turns: int
+    model: str = config["model"]["Name"]
     conversation_id: str = uuid.uuid1().hex
 
     @staticmethod
