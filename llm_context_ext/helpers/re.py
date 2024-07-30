@@ -1,8 +1,6 @@
 import re
-import configparser
 
-config = configparser.ConfigParser()
-config.read('llm_context_ext/config/config.ini')
+from llm_context_ext.helpers.config import config
 
 def extract_text_between_tags(text: str, start_tag: str, end_tag: str) -> str:
     # Regular expression to match the content between the start and end tags

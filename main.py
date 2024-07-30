@@ -1,6 +1,5 @@
 import os
 import random
-import configparser
 
 from datasets import load_dataset
 from dotenv import load_dotenv
@@ -16,11 +15,8 @@ from llm_context_ext.agents.critic import Critic
 from llm_context_ext.agents.user import User
 from llm_context_ext.helpers.text import generate_context_from_message_list
 from llm_context_ext.helpers.re import extract_task_from_content, extract_hints_from_content, extract_follow_up_message_from_content
+from llm_context_ext.helpers.config import config
 
-
-
-config = configparser.ConfigParser()
-config.read('llm_context_ext/config/config.ini')
 
 MIN_N_TURNS = config.getint('run', 'MinNTurns')
 MAX_N_TURNS = config.getint('run', 'MaxNTurns')

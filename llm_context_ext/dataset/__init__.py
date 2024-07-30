@@ -1,11 +1,12 @@
 import os
 import json
 import uuid
-import configparser
 from typing import List, Set, Union
 from dataclasses import dataclass
 
 from pyprojroot import here
+
+from llm_context_ext.helpers.config import config
 
 @dataclass
 class DataInstance:
@@ -25,9 +26,6 @@ class Dataset:
     filename: str
 
     def __init__(self):
-        config = configparser.ConfigParser()
-        config.read(here('llm_context_ext/config/config.ini'))
-
         self.filename = os.path.join(config['data']['Path'], "data.json")
 
         if os.path.exists(self.filename):
