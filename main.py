@@ -36,7 +36,7 @@ cosmopedia_ds = load_dataset(SEED_DATASET, SEED_DATASET_SUBSET, split="train").s
 dataset = Dataset()
 
 def run_chat_turn(assistant: Assistant, user_message: str, turn_idx: int, n_turns: int):
-    assistant_response = assistant.generate(user_message)
+    assistant_response = assistant.chat(user_message)
 
     if (turn_idx + 1) != n_turns:
         user = User()
@@ -45,12 +45,12 @@ def run_chat_turn(assistant: Assistant, user_message: str, turn_idx: int, n_turn
         first_user_message = assistant.messages[1]["content"]
         context_for_critic = generate_context_from_message_list(assistant.messages[2:])
 
-        critic_response = critic.generate(first_user_message, context_for_critic)
+        critic_response = critic.chat(first_user_message, context_for_critic)
     
         task, hints = extract_task_from_content(critic_response), extract_hints_from_content(critic_response)
 
         context_for_user = generate_context_from_message_list(assistant.messages[1:])
-        user_response = user.generate(task, hints, context_for_user)
+        user_response = user.chat(task, hints, context_for_user)
 
         follow_up_message = extract_follow_up_message_from_content(user_response)
 

@@ -1,6 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List
 
+from llm_context_ext.helpers.llms.groq.llama import generate as llama_generate
+
+
+generate = llama_generate
 
 class LLMAgent(ABC):
     system_message: str
@@ -16,5 +20,8 @@ class LLMAgent(ABC):
         ]
 
     @abstractmethod
-    def generate(self, user_message: str):
+    def chat(self):
         pass
+
+    def generate(self):
+        return generate(self.messages)
