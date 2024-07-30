@@ -2,7 +2,7 @@ import os
 import json
 import uuid
 import configparser
-from typing import List
+from typing import List, Set, Union
 from dataclasses import dataclass
 
 from pyprojroot import here
@@ -31,7 +31,7 @@ class Dataset:
         self.filename = os.path.join(config['data']['Path'], "data.json")
 
         if os.path.exists(self.filename):
-            self.data = self._from_json()
+            self.load()
     
     def __iter__(self):
         return iter(self.data)
@@ -54,6 +54,9 @@ class Dataset:
 
         return [DataInstance(**instance) for instance in [{key: data[key][i] for key in keys} for i in range(len(data[keys[0]]))]]
 
+    def load(self):
+        self.data = self._from_json()
+
     def save(self):    
         if not os.path.exists(os.path.dirname(self.filename)):
             os.makedirs(os.path.dirname(self.filename), exist_ok=True)
@@ -65,3 +68,11 @@ class Dataset:
         self.data.append(DataInstance(messages=messages, turns=int(len(messages) / 2)))
 
         self.save()
+    
+    def remove_data(self, idxs: Union[List, Set]):
+        self.data = [ele for idx, ele in enumerate(self.data) if idx not in idxs]
+    
+    def to_hf_dataset(self):
+        from datasets import Dataset as HF_Dataset
+        
+        return HF_Dataset.from_dict(self._to_json())
