@@ -64,5 +64,5 @@ for example in cosmopedia_ds:
     for turn_idx in range(n_turns):
         user_message = run_chat_turn(assistant, user_message, turn_idx, n_turns)
 
-    print(generate_context_from_message_list(assistant.messages[1:]))
+    print(generate_context_from_message_list(assistant.messages[1:]).encode("utf-8", errors="ignore").decode("utf-8"))
     dataset.add_data(assistant.messages[1:])
