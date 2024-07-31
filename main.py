@@ -6,9 +6,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-if "GROQ_API_KEY" not in os.environ:
-    raise ValueError("GROQ_API_KEY not set")
-
 from llm_context_ext.dataset import Dataset
 from llm_context_ext.agents.assistant import Assistant
 from llm_context_ext.agents.critic import Critic
@@ -26,10 +23,14 @@ SEED_COUNT = config.getint("dataset", "SeedCount")
 
 
 # Load Cosmopedia openstax subset
-cosmopedia_ds = load_dataset(SEED_DATASET, SEED_DATASET_SUBSET, split="train").shuffle().select(range(SEED_COUNT))
+cosmopedia_ds = load_dataset(SEED_DATASET, SEED_DATASET_SUBSET, split="train")
 
 # Initialize our dataset
 dataset = Dataset()
+
+# Select 25000 - already available instances in our dataset
+cosmopedia_ds = cosmopedia_ds.shuffle(seed=42).select(range(SEED_COUNT - len(dataset)))
+print(f"Selected {len(cosmopedia_ds)} examples from the seed dataset")
 
 def run_chat_turn(assistant: Assistant, user_message: str, turn_idx: int, n_turns: int):
     assistant_response = assistant.chat(user_message)
@@ -57,12 +58,17 @@ def run_chat_turn(assistant: Assistant, user_message: str, turn_idx: int, n_turn
 
 for example in cosmopedia_ds:
     n_turns = random.randint(MIN_N_TURNS, MAX_N_TURNS)
+
     print(f"Starting chat with {n_turns} turns")
     user_message = example["prompt"]
+
+    print("Checking if example has already been seen")
+    if user_message in dataset:
+        print("Skipping example because it has already been seen")
+        continue
 
     assistant = Assistant()
     for turn_idx in range(n_turns):
         user_message = run_chat_turn(assistant, user_message, turn_idx, n_turns)
 
-    print(generate_context_from_message_list(assistant.messages[1:]).encode("utf-8", errors="ignore").decode("utf-8"))
     dataset.add_data(assistant.messages[1:])

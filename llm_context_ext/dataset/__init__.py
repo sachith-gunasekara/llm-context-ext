@@ -41,6 +41,9 @@ class Dataset:
     def __getitem__(self, index):
         return self.data[index]
 
+    def __contains__(self, first_user_message: str):
+        return any(data_instance.messages[0]["content"].strip().lower() == first_user_message.strip().lower() for data_instance in self)
+
     def _to_json(self):
         keys = DataInstance.get_keys()
         return {key: [getattr(data_instance, key) for data_instance in self] for key in keys}
