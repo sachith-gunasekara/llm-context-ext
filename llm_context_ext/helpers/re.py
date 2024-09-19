@@ -14,6 +14,12 @@ def extract_text_between_tags(text: str, start_tag: str, end_tag: str) -> str:
         content = match.group(1)
         return content.strip()
     else:
+        # If end tag is missing, extract content after start tag
+        start_index = text.find(start_tag)
+        
+        if start_index != -1:
+            return text[start_index + len(start_tag):]
+        
         return ""
 
 def extract_task_from_content(content: str) -> str:

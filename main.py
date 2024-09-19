@@ -13,6 +13,7 @@ from llm_context_ext.agents.user import User
 from llm_context_ext.helpers.text import generate_context_from_message_list
 from llm_context_ext.helpers.re import extract_task_from_content, extract_hints_from_content, extract_follow_up_message_from_content
 from llm_context_ext.helpers.config import config
+from llm_context_ext.init.logger import logger
 
 
 MIN_N_TURNS = config.getint('run', 'MinNTurns')
@@ -29,8 +30,8 @@ cosmopedia_ds = load_dataset(SEED_DATASET, SEED_DATASET_SUBSET, split="train")
 dataset = Dataset()
 
 # Select 25000 - already available instances in our dataset
-cosmopedia_ds = cosmopedia_ds.shuffle(seed=42).select(range(SEED_COUNT - len(dataset)))
-print(f"Selected {len(cosmopedia_ds)} examples from the seed dataset")
+cosmopedia_ds = cosmopedia_ds.shuffle(seed=42).select(range(len(dataset), SEED_COUNT))
+logger.info(f"Selected {len(cosmopedia_ds)} examples from the seed dataset")
 
 def run_chat_turn(assistant: Assistant, user_message: str, turn_idx: int, n_turns: int):
     assistant_response = assistant.chat(user_message)
@@ -57,18 +58,25 @@ def run_chat_turn(assistant: Assistant, user_message: str, turn_idx: int, n_turn
     
 
 for example in cosmopedia_ds:
-    n_turns = random.randint(MIN_N_TURNS, MAX_N_TURNS)
-
-    print(f"Starting chat with {n_turns} turns")
-    user_message = example["prompt"]
-
-    print("Checking if example has already been seen")
-    if user_message in dataset:
-        print("Skipping example because it has already been seen")
+    try:
+        n_turns = random.randint(MIN_N_TURNS, MAX_N_TURNS)
+    
+        logger.info(f"Starting chat with {n_turns} turns")
+        user_message = example["prompt"]
+    
+        logger.info("Checking if example has already been seen")
+        if user_message in dataset:
+            logger.warning("Skipping example because it has already been seen")
+            continue
+    
+        logger.info("Running chat")
+        assistant = Assistant()
+        for turn_idx in range(n_turns):
+            user_message = run_chat_turn(assistant, user_message, turn_idx, n_turns)
+    
+        logger.info("Adding conversatiion instance to the dataset")
+        dataset.add_data(assistant.messages[1:])
+    except Exception as e:
+        logger.error("Exception occured\n: %s", e)
+    finally:
         continue
-
-    assistant = Assistant()
-    for turn_idx in range(n_turns):
-        user_message = run_chat_turn(assistant, user_message, turn_idx, n_turns)
-
-    dataset.add_data(assistant.messages[1:])
